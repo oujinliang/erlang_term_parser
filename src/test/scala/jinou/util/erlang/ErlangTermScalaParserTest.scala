@@ -10,10 +10,10 @@ import org.junit.Assert._
  */
 class ErlangTermScalaParserTest {
 
-    @Test def test() {
-        val a = (('a' to 'z') ++ ('A' to 'Z') ++ "_") toArray
-        
-        println(a mkString)
+    @Test def testQuoteAtom() {
+       val atom = ErlangTermScalaParser.parse(""" 'Abort_ss#@' """)
+       println(atom)
     }
+    
     
 }

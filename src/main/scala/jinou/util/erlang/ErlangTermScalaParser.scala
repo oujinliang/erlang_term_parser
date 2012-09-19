@@ -44,20 +44,20 @@ private class Parser(chars: Array[Char]) {
                 else if(isAtomStart(char))
                     getAtom
                 else
-                   throw new IllegalArgumentException("invalid input")     
+                   errorArgs("invalid input")     
         }
     }
     
     private def getQuoteAtom(): EAtom = {
-        require(chars(pos) == '\'')
-        moveNext
+        eat('\'')
         val start = pos
-        findNext('\'', '\\')
-        val atom = new String(chars, start, pos)
-        null
+        moveTo('\'', '\\')
+        eat('\'')
+        new EAtom(new String(chars, start, pos - start - 1))
     }
     
     private def getAtom(): EAtom = {
+        val start = pos
         null
     }
     
@@ -90,18 +90,23 @@ private class Parser(chars: Array[Char]) {
             moveNext
     }
     
-    private def findNext(ch: Char, escapeChar: Char) {
+    private def eat(c: Char) {
+        require(chars(pos) == c)
+        moveNext
+    }
+    
+    private def moveTo(ch: Char, escapeChar: Char) {
         var found = false
         while(pos < len && !found) {
-            val char = chars(pos)
-            if (char == escapeChar)
-                moveNext(2)
-            else if (char == ch) 
-                found = true
-            else 
-                moveNext
+            chars(pos) match {
+                case `escapeChar` => moveNext(2)
+                case `ch`         => found = true
+                case _           => moveNext
+            }
         }
     }
     private def moveNext() { pos += 1 }
     private def moveNext(i: Int) { pos += i }
+    
+    private def errorArgs(error: String): Nothing = throw new IllegalArgumentException(error)
 } 
