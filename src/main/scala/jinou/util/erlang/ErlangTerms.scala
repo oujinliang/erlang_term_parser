@@ -4,6 +4,8 @@
  */
 package jinou.util.erlang
 
+import scala.math.ScalaNumber
+
 //====== Erlang Classes
 
 abstract class ETerm(val termType: String)
@@ -24,7 +26,7 @@ class EList(val elements: List[ETerm]) extends ETerm("list") {
     override def toString = elements.mkString("[", ",",  "]")
 }
 
-class ENumber(val number: BigDecimal) extends ETerm("number") {
+class ENumber[T <: ScalaNumber](val number: T) extends ETerm("number") {
     override def toString = number.toString
 }
 
