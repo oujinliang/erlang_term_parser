@@ -6,10 +6,11 @@ package jinou.util.erlang
 
 import org.junit._
 import org.junit.Assert._
-import scala.math.ScalaNumber
+import ErlangTerms._
+
 /**
  */
-class ErlangTermScalaParserTest {
+class ErlangTermJavaParserTest {
 
     @Test def testQuoteAtom() {
        testAtom("Abort_ss#@", """ 'Abort_ss#@' """)
@@ -20,7 +21,7 @@ class ErlangTermScalaParserTest {
     }
     
     private def testAtom(expected: String, input: String) {
-        val atom = parse[EAtom](input)
+        val atom = parse[ErlangTerms.EAtom](input)
         assertEquals(expected, atom.name)
     }
     
@@ -34,19 +35,19 @@ class ErlangTermScalaParserTest {
         testNumber(BigDecimal("-1.25E6"), " -1.25E+6   ")
     }
     
-    private def testNumber[T <: ScalaNumber](expected: T, input: String) {
-        val number = parse[ENumber[T]](input)
+    private def testNumber[T <: Number](expected: T, input: String) {
+        val number = parse[ErlangTerms.ENumber[T]](input)
         println(number)
         assertEquals(expected.toString(), number.toString())
     }
     
     @Test def testList() {
-        val list = parse[EList](""" [[ abc, 'A_ss', 123, -2.34, {good, "this is a string\" Yes \098", 
+        val list = parse[ErlangTerms.EList](""" [[ abc, 'A_ss', 123, -2.34, {good, "this is a string\" Yes \098", 
                 
         name, 
         
         bad}, <<"hello">>, <0.9.1234> ], {this, that}, [] , {}]""")
         println (list)
     }
-    private def parse[T <: ETerm](input: String) = ErlangTermScalaParser.parse(input).asInstanceOf[T]
+    private def parse[T <: ErlangTerms.ETerm](input: String) = ErlangTermJavaParser.parse(input).asInstanceOf[T]
 }

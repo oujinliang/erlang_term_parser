@@ -30,8 +30,8 @@ class ENumber[T <: ScalaNumber](val number: T) extends ETerm("number") {
     override def toString = number.toString
 }
 
-class EAtom(val name: String) extends ETerm("atom") {
-    override def toString = name
+class EAtom(val name: String, val quote: Boolean) extends ETerm("atom") {
+    override def toString = if (quote) "\'" + name + "\'" else name
 }
 
 class EString(val value: String) extends ETerm("string") {

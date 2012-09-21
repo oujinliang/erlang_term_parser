@@ -61,13 +61,13 @@ private class Parser(chars: Array[Char]) {
         term
     }
     
-    private def getQuoteAtom(): EAtom = new EAtom(getString('\''))
+    private def getQuoteAtom(): EAtom = new EAtom(getString('\''), true)
     
     private def getAtom(): EAtom = {
         val start = pos
         while(pos < len && atoms.contains(chars(pos))) 
             moveNext
-        new EAtom(new String(chars, start, pos - start))
+        new EAtom(new String(chars, start, pos - start), false)
     }
     
     private def getList(): EList = new EList(getTermList('[', ']'))
@@ -77,13 +77,11 @@ private class Parser(chars: Array[Char]) {
     private def getString(): EString = new EString(getString('\"'))
     
     private def getNumber(): ENumber[_] = {
-        val start = chars(pos) match {
-            case '+' => moveNext; pos
-            case _   => pos
-        }
-        var end = false
+        if (chars(pos) == '+')
+            moveNext
+        val start = pos
         var isFloat = false
-        while (pos < len && !end && numbers.contains(chars(pos))) {
+        while (pos < len && numbers.contains(chars(pos))) {
             val ch = chars(pos)
             if (ch == 'e' || ch == 'E' || ch == '.') 
                 isFloat = true
