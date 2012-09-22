@@ -43,7 +43,7 @@ class ErlangTermJavaParserTest {
     
     @Test def testList() {
         val list = parse[ErlangTerms.EList](""" [[ abc, 'A_ss', 123, -2.34, {good, "this is a string\" Yes \098", 
-                
+           %% This is a comment     
         name, 
         
         bad}, <<"hello">>, <0.9.1234> ], {this, that}, [] , {}]""")

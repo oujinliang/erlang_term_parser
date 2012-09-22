@@ -131,6 +131,11 @@ private class Parser(chars: Array[Char]) {
     private def skipWhitespaces() {
         while(pos < len && Character.isWhitespace(chars(pos)) ) 
             moveNext
+        if (pos < len && chars(pos) == '%') {
+            while(pos < len && chars(pos) != '\n')
+                moveNext
+            eatOptional('\r')
+        }
     }
     
     private def getInt() = {
@@ -141,9 +146,15 @@ private class Parser(chars: Array[Char]) {
         new String(chars, start, pos - start).toInt
     }
     
+    private def eatOptional(c: Char) {
+        if (pos < len && chars(pos) == c)
+            moveNext
+    }
+    
     private def eat(str: String) {
         str foreach {c => eat(c) }
     }
+    
     private def eat(c: Char) {
         require(chars(pos) == c)
         moveNext

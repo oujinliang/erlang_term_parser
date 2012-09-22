@@ -179,8 +179,19 @@ public class ErlangTermJavaParser {
         while (pos < len && Character.isWhitespace(chars[pos])) {
             moveNext();
         }
+        if (pos < len && chars[pos] == '%') {
+            while (pos < len && chars[pos] != '\n') {
+                moveNext();
+            }
+            eatOptional('\r');
+        }
     }
     
+    private void eatOptional(char c) {
+        if (pos > len && chars[pos] == c) {
+            moveNext();
+        }
+    }
     private void eat(String s) {
         for(int i = 0; i < s.length(); ++i) {
             eat(s.charAt(i));

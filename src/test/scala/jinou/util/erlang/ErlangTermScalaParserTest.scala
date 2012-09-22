@@ -44,6 +44,8 @@ class ErlangTermScalaParserTest {
         val list = parse[EList](""" [[ abc, 'A_ss', 123, -2.34, {good, "this is a string\" Yes \098", 
                 
         name, 
+                
+                %% This is a comment
         
         bad}, <<"hello">>, <0.9.1234> ], {this, that}, [] , {}]""")
         println (list)
