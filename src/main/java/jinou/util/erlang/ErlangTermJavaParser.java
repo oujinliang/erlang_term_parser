@@ -17,6 +17,12 @@ import jinou.util.erlang.ErlangTerms.BadFormatException;
  */
 public class ErlangTermJavaParser {
 
+    /**
+     * Parse the input string, and returns a ETerm object.
+     * @param input
+     * @return
+     * @throws BadFormatException
+     */
     public static ErlangTerms.ETerm parse(String input) throws BadFormatException {
         try {
             return new ErlangTermJavaParser(input.toCharArray()).getTerm();
@@ -47,10 +53,9 @@ public class ErlangTermJavaParser {
     ErlangTerms.ETerm getTermPure() {
         char c = chars[pos];
         switch (c) {
-            case '[': return getList();
-            case '{': return getTuple();
-            case '<': 
-                return chars[pos + 1] == '<' ? getBinary() : getPid();
+            case '[' : return getList();
+            case '{' : return getTuple();
+            case '<' : return chars[pos + 1] == '<' ? getBinary() : getPid();
             case '\'': return getQuoteAtom();
             case '"' : return getString();
             default:
@@ -67,6 +72,7 @@ public class ErlangTermJavaParser {
     private ErlangTerms.EAtom getQuoteAtom() {
         return new ErlangTerms.EAtom(getString('\''), true);
     }
+    
     private ErlangTerms.EAtom getAtom() {
         int start = pos;
         while (pos < len && isInAtom(chars[pos])) {
