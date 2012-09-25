@@ -194,7 +194,7 @@ public class ErlangTermJavaParser {
     }
     
     private void eatOptional(char c) {
-        if (pos > len && chars[pos] == c) {
+        if (pos < len && chars[pos] == c) {
             moveNext();
         }
     }
