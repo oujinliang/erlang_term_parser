@@ -23,9 +23,9 @@ public class ErlangTermJavaParser {
      * @return
      * @throws BadFormatException
      */
-    public static ErlangTerms.ETerm parse(String input) throws BadFormatException {
+    public static ErlangTerms.ETerm parse(String input, boolean continueOnEnd) throws BadFormatException {
         try {
-            return new ErlangTermJavaParser(input.toCharArray()).getTerm();
+            return new ErlangTermJavaParser(input.toCharArray()).getTerm(continueOnEnd);
         } catch (Exception e) {
             throw new ErlangTerms.BadFormatException("Bad term format.", e);
         }
@@ -39,6 +39,19 @@ public class ErlangTermJavaParser {
     private ErlangTermJavaParser(char[] chars) {
         this.chars = chars;
         this.len = chars.length;
+    }
+    
+    ErlangTerms.ETerm getTerm(boolean continueOnEnd) {
+        if (!continueOnEnd) {
+            return getTerm();
+        }
+        List<ErlangTerms.ETerm> terms = new ArrayList<ErlangTerms.ETerm>();
+        while(pos < len) {
+            terms.add(getTerm());
+            eat('.');
+            skipWhitespaces();
+        }
+        return new ErlangTerms.EList(terms);
     }
     
     // 
@@ -133,6 +146,10 @@ public class ErlangTermJavaParser {
     }
     
     private List<ErlangTerms.ETerm> getTermList(char start, char end) {
+        return getTermList(start, end, ',');
+    }
+    
+    private List<ErlangTerms.ETerm> getTermList(char start, char end, char sep) {
         eat(start);
         List<ErlangTerms.ETerm> list = new ArrayList<ErlangTerms.ETerm>();
         while(pos < len) {
@@ -140,7 +157,7 @@ public class ErlangTermJavaParser {
             char c = chars[pos];
             if (c == end) {
                 break;
-            } else if (c == ',') {
+            } else if (c == sep) {
                 moveNext();
             } else {
                 list.add(getTerm());
@@ -182,15 +199,25 @@ public class ErlangTermJavaParser {
     }
     
     private void skipWhitespaces() {
-        while (pos < len && Character.isWhitespace(chars[pos])) {
-            moveNext();
-        }
-        if (pos < len && chars[pos] == '%') {
-            while (pos < len && chars[pos] != '\n') {
+        while(isWhitespace() || isCommentStart()) {
+            while (isWhitespace()) {
                 moveNext();
             }
-            eatOptional('\r');
+            if (isCommentStart()) {
+                while (pos < len && chars[pos] != '\n') {
+                    moveNext();
+                }
+                eatOptional('\r');
+            }
         }
+    }
+    
+    private boolean isWhitespace() {
+        return pos < len && Character.isWhitespace(chars[pos]);
+    }
+    
+    private boolean isCommentStart() {
+        return pos < len && chars[pos] == '%';
     }
     
     private void eatOptional(char c) {
